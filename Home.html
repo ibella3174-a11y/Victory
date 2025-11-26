@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scale Heights • Home</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#47a3e7;
+      --primary-600:#3090c7;
+      --muted:#bfc4c8;
+      --text:#eef1f3;
+      --radius:12px;
+      --glass-black: rgba(3,6,9,0.82); /* deep black glass */
+      --card-black: rgba(0,0,0,0.54);
+      --header-height:64px;
+      --cta-left:#2f8fe0;
+      --cta-right:#1d6fbf;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{height:100%; scroll-behavior:smooth}
+    body{
+      min-height:100%;
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background: url('https://i.ibb.co/Kj6MjS2w/images-11.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-attachment: fixed;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+      /* ensure content doesn't hide under sticky full-width header */
+      padding-top: var(--header-height);
+    }
+
+    /* subtle page dim so glass stands out */
+    body::before{
+      content:"";
+      position:fixed; inset:0; z-index:0;
+      background: rgba(0,0,0,0.06);
+      pointer-events:none;
+    }
+
+    /* ===== PURE BLACK FULL-WIDTH HEADER (separate from glass) ===== */
+    .topbar{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      height:var(--header-height);
+      background:#000; /* pure black */
+      z-index:2500;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 6px 18px rgba(0,0,0,0.45);
+    }
+    .topbar-inner{
+      width:100%;
+      max-width:1200px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 14px;
+      gap:12px;
+    }
+    .topbar .logo img{ height:42px; width:110px; object-fit:contain; display:block }
+
+    .topbar .nav-actions{ display:flex; align-items:center; gap:10px }
+
+    /* Base button used site-wide */
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;
+      background:linear-gradient(180deg,var(--primary),var(--primary-600));
+      color:#fff;border:none;font-weight:600;cursor:pointer;
+      box-shadow:0 6px 20px rgba(71,163,231,0.12);
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn:hover{ box-shadow:0 10px 28px rgba(71,163,231,0.18); }
+
+    /* Stronger, more specific CTA for the header sign-up button — overrides base .btn */
+    .topbar .btn{
+      background: linear-gradient(90deg, var(--cta-left), var(--cta-right));
+      padding:10px 18px;
+      font-weight:700;
+      border-radius:12px;
+      box-shadow: 0 10px 30px rgba(29,111,191,0.28), 0 4px 10px rgba(45,120,190,0.12);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #fff;
+      letter-spacing: 0.2px;
+    }
+    .topbar .btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(29,111,191,0.36);
+    }
+    .topbar .btn:focus{ outline: 2px solid rgba(47,143,224,0.16); outline-offset: 2px; }
+
+    .topbar .menu-btn{ display:flex; flex-direction:column; gap:4px; background:none; border:0; padding:8px; cursor:pointer }
+    .topbar .menu-btn .line{ width:20px; height:2px; background:#eef1f3; border-radius:2px }
+
+    /* small dropdown positioned from header */
+    #menuOverlay{
+      position:absolute;
+      top:calc(var(--header-height) + 6px);
+      right:16px;
+      background:var(--card-black);
+      padding:12px;
+      border-radius:10px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.6);
+      display:none;
+      min-width:180px;
+      border:1px solid rgba(255,255,255,0.03);
+      z-index:2600;
+    }
+    #menuOverlay.open{display:block}
+    #menuOverlay ul{list-style:none}
+    #menuOverlay li{padding:8px 0}
+    #menuOverlay a{color:var(--text); font-weight:600; font-size:0.95rem}
+
+    /* ===== SITE GLASS (below header) ===== */
+    .site-glass{
+      position:relative;
+      z-index:1200;
+      width:calc(100% - 32px);
+      max-width:1200px;
+      margin:18px auto;
+      border-radius:14px;
+      background: var(--glass-black);
+      border: 1px solid rgba(255,255,255,0.03);
+      padding:12px;
+      backdrop-filter: blur(14px) saturate(130%);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+    }
+
+    a{color:var(--primary);text-decoration:none}
+    a:hover{color:var(--primary-600)}
+
+    /* video area: still outside the glass (below glass by default) */
+    .video-wrap{ width:100%; max-width:1200px; margin:20px auto; z-index:800; position:relative; }
+    .video-embed{ width:100%; border-radius:12px; overflow:hidden; box-shadow:0 16px 50px rgba(0,0,0,0.6) }
+    .video-embed iframe{ width:100%; height:420px; border:0; display:block }
+
+    /* content sections inside glass */
+    main{ margin-top:8px }
+    section{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:10px;
+      padding:22px;
+      margin:14px 0;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    .hero{ text-align:center }
+    .tag-small{ color:var(--primary); font-weight:600; margin-bottom:8px; display:block }
+    .tag-large{ font-size:2.4rem; font-weight:700; margin-bottom:12px; color:#fff }
+    .hero p{ color:var(--muted); max-width:760px; margin:0 auto; line-height:1.5 }
+
+    .actions{ display:flex; justify-content:center; gap:12px; margin-top:12px }
+
+    .image-wrap{ background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01)); padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.02) }
+    .content-image{ width:100%; border-radius:10px; display:block; object-fit:cover; min-height:180px }
+    .image-caption h4{ color:#fff; margin:10px 0 8px; font-size:1.02rem }
+    .image-caption p{ color:var(--muted); white-space:pre-wrap; line-height:1.5 }
+
+    .features{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; align-items:start }
+    .card{ background: var(--card-black); padding:18px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); box-shadow:0 8px 30px rgba(0,0,0,0.5); text-align:left }
+    .card i{ font-size:1.4rem; color:var(--primary); margin-bottom:10px; display:inline-block }
+    .card h3{ color:#fff; font-size:1.02rem; margin-bottom:6px }
+    .card p{ color:var(--muted); font-size:0.95rem; line-height:1.5 }
+
+    #image-middle-in-features{ grid-column:1/-1; padding:18px; background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); border-radius:10px; border:1px solid rgba(255,255,255,0.02) }
+
+    .earning-table{ width:100%; border-collapse:collapse; margin-top:12px }
+    .earning-table th, .earning-table td{ padding:10px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--muted); text-align:left }
+    .earning-table th{ color:#fff; font-weight:700 }
+
+    /* FAQ left aligned */
+    #faq h2{ text-align:left; color:#fff; margin-bottom:14px; font-size:1.25rem }
+    .accordion-item{ border-bottom:1px solid rgba(255,255,255,0.03) }
+    .accordion-item button{
+      width:100%; padding:14px; background:none; border:0; color:var(--text); font-weight:600; display:flex; justify-content:space-between; align-items:center; cursor:pointer; text-align:left;
+    }
+    .accordion-item .content{ display:none; padding:8px 6px 18px; color:var(--muted); text-align:left; line-height:1.6 }
+
+    /* footer inside glass */
+    .footer-inner{ display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; margin-top:8px }
+    .social-icons{ display:flex; gap:12px }
+
+    /* small powered-by footer (outside glass) */
+    .small-footer{ text-align:center; color:#bfc4c8; margin:22px auto 40px; max-width:1200px; position:relative; z-index:800; }
+
+    /* scroll top */
+    #scrollTop{ position:fixed; right:18px; bottom:18px; width:44px; height:44px; border-radius:50%; background:var(--primary); color:#fff; display:none; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,0.45); z-index:1500 }
+
+    @media (max-width:900px){
+      .tag-large{ font-size:1.8rem }
+      .video-embed iframe{ height:260px }
+      section{ padding:16px }
+      .site-glass{ width:calc(100% - 20px); padding:10px }
+      .topbar-inner{ padding:8px 10px }
+    }
+    @media (max-width:480px){
+      .video-embed iframe{ height:200px }
+      .topbar .logo img{ height:34px }
+      .topbar .btn{ padding:8px 12px; font-size:0.95rem }
+      .site-glass{ margin:12px auto }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FULL-WIDTH PURE BLACK HEADER -->
+  <div class="topbar" role="banner" aria-label="Top navigation">
+    <div class="topbar-inner">
+      <div class="logo">
+        <img src="https://i.ibb.co/d4pNsyC5/20251015-171706-2-removebg-preview.png" alt="Scale Heights Logo">
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-right:8px;">
+          <button class="btn" onclick="location.href='signup.html'">Sign Up</button>
+        </div>
+
+        <div style="position:relative;">
+          <button id="menuBtn" class="menu-btn" aria-label="Open menu">
+            <span class="line"></span><span class="line"></span><span class="line"></span>
+          </button>
+
+          <!-- dropdown from header -->
+          <div id="menuOverlay" aria-hidden="true">
+            <ul>
+              <li><a href="#hero">Home</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href='signup.html'>Sign Up</a></li>
+              <li><a href='#'>Terms</a></li>
+              <li><a href='#'>Privacy</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SITE GLASS (below header) -->
+  <div class="site-glass" role="main" aria-label="Scale Heights content">
+
+    <main>
+      <!-- Hero section -->
+      <section class="hero" id="hero">
+        <span class="tag-small">Empower Your Future</span>
+        <h1 class="tag-large">SCALEHEIGHT Makes It Simple</h1>
+        <p>SCALEHEIGHT provides the tools to learn valuable digital skills, grow your daily income, and unlock new opportunities across Africa and beyond.</p>
+
+        <div class="actions">
+          <button class="btn" onclick="location.href='signup.html'">Get Started <i class="fas fa-arrow-right" style="font-size:0.9rem;"></i></button>
+        </div>
+
+        <div class="image-wrap" id="image-after-getstarted" style="margin-top:18px">
+          <img src="https://i.ibb.co/KcTwrjKr/20251015-171732.jpg" alt="How it works" class="content-image">
+          <div class="image-caption">
+            <h4>How It Works</h4>
+            <p>
+SCALEHEIGHT is a digital learning and earning ecosystem designed to help users acquire in-demand skills while earning rewards through simple daily activities.
+
+From Emoji4Cash to Pictogram challenges, users can build skills, grow income, and enjoy flexible earning systems. With innovative features, daily bonuses, and team incentives, SCALEHEIGHT bridges the gap between learning and earning.
+
+— Emoji4Cash — Earn daily by scaling emojis
+— Pictogram — Learn, play, and get rewarded
+— Digital Skills — Gain real-world knowledge
+— C2C System — Earn by helping others join
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="features" id="features" aria-label="features">
+        <div class="card">
+          <i class="fas fa-rocket" aria-hidden="true"></i>
+          <h3>Fast Growth</h3>
+          <p>Boost your online presence and income through interactive tools and gamified learning systems.</p>
+        </div>
+
+        <div class="card">
+          <i class="fas fa-coins" aria-hidden="true"></i>
+          <h3>Earn Rewards</h3>
+          <p>Access multiple income streams — from emoji tasks to team bonuses and digital skill monetization.</p>
+        </div>
+
+        <div id="image-middle-in-features" role="region" aria-label="Scale Heights plan">
+          <div class="image-wrap">
+            <img src="https://i.ibb.co/CpQyjb8b/20251015-172138.jpg" alt="Scale Heights plan" class="content-image">
+            <div class="image-caption">
+              <h4>Scaleheight Plan</h4>
+              <p>
+SCALEHEIGHT has one plan only: the SCALEHEIGHT Plan — ₦12,000.
+
+This plan grants access to the platform, earning features, and all core tools required to start learning, completing tasks, and earning rewards on SCALEHEIGHT.
+              </p>
+
+              <h4 style="margin-top:12px">Earning Strategies</h4>
+              <table class="earning-table" aria-label="Earning strategies table">
+                <thead>
+                  <tr>
+                    <th>Earning Source</th>
+                    <th>Reward (₦)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Emoji Team Bonus</td><td>9,000</td></tr>
+                  <tr><td>Sale Commission</td><td>10,500</td></tr>
+                  <tr><td>Job Bridge Review</td><td>3,000</td></tr>
+                  <tr><td>Pick Emoji Task</td><td>1,000</td></tr>
+                  <tr><td>TikTok Reward</td><td>50,000</td></tr>
+                  <tr><td>First Level Spill</td><td>300</td></tr>
+                  <tr><td>Second Level Spill</td><td>100</td></tr>
+                  <tr><td colspan="2" style="padding-top:8px;color:#fff;font-weight:700">Extra Rewards</td></tr>
+                  <tr><td>Social Monetization</td><td>10,000</td></tr>
+                  <tr><td>Reactions on Post</td><td>1,000</td></tr>
+                  <tr><td>Scale Emoji Games</td><td>20,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <i class="fas fa-globe" aria-hidden="true"></i>
+          <h3>Global Access</h3>
+          <p>SCALEHEIGHT operates across multiple African countries, giving users the flexibility to earn, learn, and grow from anywhere.</p>
+        </div>
+
+        <div class="card">
+          <i class="fas fa-brain" aria-hidden="true"></i>
+          <h3>AI Assistance</h3>
+          <p>Leverage smart automation tools and integrated analytics to enhance your learning and earning experience.</p>
+        </div>
+      </section>
+      
+            <section id="pre-faq-image" class="image-wrap" aria-label="why scaleheight">
+        <img src="https://i.ibb.co/8GwBXwX/20251015-171744.jpg" alt="Why Scale Heights" class="content-image">
+        <div class="image-caption">
+          <h4>SCALE GAMES CENTER</h4>
+          <p>SCALEHEIGHT GAMES CENTER
+We believe your downtime should do more than just entertain you it should reward you. That’s why we created SCALE Games.
+
+With this feature, playing your favorite games like Candy Crush, Pool, and Strike isn’t just fun, it’s profitable. Every level you complete, every game you win, can now earn you cash rewards and free gifts.
+
+For too long, people have played games purely for fun. We’re changing that. SCALEHEIGHT gives you the tools to turn your gaming time into real rewards, making every moment spent in the Games Center count.
+
+🎮 With SCALE Games, fun has value and now it can pay you.
+
+          </p>
+        </div>
+     </section>
+
+      <section id="pre-faq-image" class="image-wrap" aria-label="why scaleheight">
+        <img src="https://i.ibb.co/DgbyvgYt/20251015-171727.jpg" alt="Why Scale Heights" class="content-image">
+        <div class="image-caption">
+          <h4>Why SCALEHEIGHT?</h4>
+          <p>
+SCALEHEIGHT is a trusted and transparent earning system built for the modern digital user.
+
+■ Fully verified and authorized to operate globally
+■ Secure payout and reward systems
+■ Built by top African digital entrepreneurs
+
+Earnings Potential
+● Earn ₦5,000+ per activity or emoji team bonus
+● Access multiple reward tiers and commissions
+● Use or resell digital skills for added income
+● Enjoy instant withdrawals once verified
+          </p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" aria-label="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="accordion">
+          <div class="accordion-item">
+            <button onclick="toggleFaq(this)"><span class="faq-question">What is the SCALEHEIGHT platform?</span> <i class="fas fa-chevron-down"></i></button>
+            <div class="content">
+              <p>SCALEHEIGHT is a digital learning and earning framework that rewards users through fun activities like emoji scaling, pictograms, and skill-based tasks.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button onclick="toggleFaq(this)"><span class="faq-question">How do I earn on SCALEHEIGHT?</span> <i class="fas fa-chevron-down"></i></button>
+            <div class="content">
+              <p>You can earn by picking emojis, joining team challenges, learning digital skills, or reselling opportunities through the C2C network.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button onclick="toggleFaq(this)"><span class="faq-question">Do I need referrals to earn?</span> <i class="fas fa-chevron-down"></i></button>
+            <div class="content">
+              <p>No, referrals are optional. Every user receives a $9 signup bonus after choosing an emoji team.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button onclick="toggleFaq(this)"><span class="faq-question">Is SCALEHEIGHT available in Nigeria?</span> <i class="fas fa-chevron-down"></i></button>
+            <div class="content">
+              <p>Yes. SCALEHEIGHT operates across all African countries, including Nigeria, Ghana, Kenya, and South Africa.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer inside glass -->
+      <section aria-label="footer-section" style="padding:14px;">
+        <div class="footer-inner">
+          <nav class="footer-nav" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <a href="#hero">Home</a>
+            <a href="#features">Features</a>
+            <a href="#faq">FAQ</a>
+            <a href='#'>Terms</a>
+            <a href='#'>Privacy</a>
+          </nav>
+
+          <div class="social-icons">
+            <a href="https://wa.me/2348131288053?text=Hi%20can%20I%20get%20more%20info%20on%20how%20ScaleHeight%20works%3F%3F" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://wa.me/2348131288053?text=Hi%20can%20I%20get%20more%20info%20on%20how%20ScaleHeight%20works%3F%3F" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            <a href="https://wa.me/2348131288053?text=Hi%20can%20I%20get%20more%20info%20on%20how%20ScaleHeight%20works%3F%3F" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://wa.me/2348131288053?text=Hi%20can%20I%20get%20more%20info%20on%20how%20ScaleHeight%20works%3F%3F" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+          </div>
+
+          <div class="copyright">© 2025 SCALEHEIGHT. All rights reserved.</div>
+        </div>
+      </section>
+
+    </main>
+  </div> <!-- .site-glass -->
+
+  <!-- small powered-by footer (outside glass) -->
+  <div class="small-footer">
+    Powered by
+    <a href="https://t.me/clicksensewithDivineTv" target="_blank"
+       style="display:inline-block;background:linear-gradient(90deg,#add8e6,#47a3e7);color:#000;font-weight:600;padding:6px 12px;border-radius:8px;text-decoration:none;box-shadow:0 6px 18px rgba(71,163,231,0.28);">
+      RaphXsoln 
+    </a>
+  </div>
+
+  <div id="scrollTop" title="Back to top">↑</div>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    if (menuBtn && menuOverlay) menuBtn.addEventListener('click', (e) => {
+      menuOverlay.classList.toggle('open');
+    });
+
+    // FAQ accordion (left-aligned)
+    function toggleFaq(btn){
+      document.querySelectorAll('.accordion-item').forEach(item=>{
+        const content = item.querySelector('.content');
+        if(item.contains(btn)){
+          const open = content.style.display === 'block';
+          content.style.display = open ? 'none' : 'block';
+          const icon = btn.querySelector('i');
+          if(icon){ icon.classList.toggle('fa-chevron-up', !open); icon.classList.toggle('fa-chevron-down', open); }
+        } else {
+          const c = item.querySelector('.content');
+          if(c) c.style.display = 'none';
+          const icon = item.querySelector('i'); if(icon){ icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+        }
+      });
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e){
+      if (!menuOverlay) return;
+      if (!menuOverlay.contains(e.target) && !menuBtn.contains(e.target)) {
+        menuOverlay.classList.remove('open');
+      }
+    });
+
+    // Scroll-to-top
+    const scrollTop = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      if (!scrollTop) return;
+      scrollTop.style.display = window.scrollY > 240 ? 'flex' : 'none';
+    });
+    if (scrollTop) scrollTop.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+  </script>
+</body>
+</html>
